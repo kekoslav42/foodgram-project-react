@@ -6,14 +6,13 @@ services:
       - /var/lib/postgresql/data/
     env_file:
       - ./.env
+
   backend:
-    build:
-      context: ../backend
-      dockerfile: Dockerfile
+    image: kekoslav/foodgram
     restart: always
     volumes:
-      - static_value:/app/static/
-      - media_value:/app/media/
+      - static_value:/backend/static/
+      - media_value:/backend/media/
     depends_on:
       - db
     env_file:
@@ -21,9 +20,7 @@ services:
 
 
   frontend:
-    build:
-      context: ../frontend
-      dockerfile: Dockerfile
+    image: kekoslav/foodgram_front
     volumes:
       - ../frontend/:/app/result_build/
   nginx:
