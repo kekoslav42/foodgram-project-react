@@ -5,7 +5,6 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
 from users.serializers import CustomUserSerializer
-
 from .models import (Favorite, Ingredient, IngredientForRecipe, Purchase,
                      Recipe, Tag)
 
@@ -171,6 +170,9 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         ingredients = self.initial_data.get('ingredients')
+        ingredients_list = []
+        tags = self.initial_data.get('tags')
+        tags_list = []
         if not ingredients:
             raise ValidationError('Не выбраны ингредиенты')
         for ingredient in ingredients:
@@ -179,6 +181,20 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
                     f'{ingredient} указано не допустимое кол-во ингредиентов :'
                     f'{ingredient["amount"]}'
                 )
+        for ingredient in ingredients:
+            ingredient_id = ingredient['id']
+            if ingredient_id in ingredients_list:
+                raise serializers.ValidationError(
+                    'Ингредиенты не должны повторяться'
+                )
+            ingredients_list.append(ingredient_id)
+
+        for tag in tags:
+            if tag in tags_list:
+                raise serializers.ValidationError(
+                    'Теги не должны повторяться'
+                )
+            tags_list.append(tag)
         return data
 
     def create(self, validated_data):
@@ -191,18 +207,11 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
         return recipe
 
     def update(self, instance, validated_data):
-        instance.image = validated_data.get('image', instance.image)
-        instance.name = validated_data.get('name', instance.name)
-        instance.text = validated_data.get('text', instance.text)
-        instance.cooking_time = validated_data.get(
-            'cooking_time', instance.cooking_time
-        )
         instance.tags.clear()
-        self.create_tags(validated_data.get('tags'), instance)
         IngredientForRecipe.objects.filter(recipe=instance).all().delete()
-        self.create_ingredients(validated_data.get('ingredients'), instance)
-        instance.save()
-        return instance
+        self.create_tags(validated_data.pop('tags'), instance)
+        self.create_ingredients(validated_data.pop('ingredients'), instance)
+        return super().update(instance, validated_data)
 
     def to_representation(self, instance):
         return ReadyRecipeSerializer(

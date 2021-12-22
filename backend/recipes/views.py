@@ -5,7 +5,6 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from foodgram import custom_filters, custom_permissions, pagination
-
 from .mixins import ListAndRetrieveSet
 from .models import Favorite, Ingredient, Purchase, Recipe, Tag
 from .serializers import (CreateRecipeSerializer, FavouriteSerializer,
@@ -103,5 +102,5 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def download_shopping_cart(self, request):
         """ Скачивание списка покупок """
         return get_send_file(
-            request.user.purchase.all(), f'Список покупок: {request.user}.txt'
+            request, f'Список покупок: {request.user}.txt'
         )

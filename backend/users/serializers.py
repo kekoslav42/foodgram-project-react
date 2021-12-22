@@ -3,7 +3,6 @@ from djoser.serializers import UserCreateSerializer, UserSerializer
 from rest_framework import serializers
 
 from recipes.models import Recipe
-
 from .models import Follow
 
 User = get_user_model()
@@ -85,11 +84,9 @@ class ReadyFollowSerializer(serializers.ModelSerializer):
 
     def get_recipes(self, data):
         request = self.context.get('request')
-        recipes_limit = request.query_params.get('recipes_limit')
-        if recipes_limit is not None:
-            recipes = data.recipes.all()[:(int(recipes_limit))]
-        else:
-            recipes = data.recipes.all()
+        limit = request.query_params.get('recipes_limit')
+        recipes = (data.recipes.all()[:int(limit)] if limit else
+                   data.recipes.all())
         context = {'request': request}
         return FollowingRecipesSerializers(
             recipes, many=True, context=context

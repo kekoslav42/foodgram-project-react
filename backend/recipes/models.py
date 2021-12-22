@@ -62,6 +62,7 @@ class Recipe(models.Model):
         max_length=50, verbose_name='Название'
     )
     image = models.ImageField(
+        upload_to='posts/',
         verbose_name='Изображение',
     )
     text = models.TextField(
@@ -109,6 +110,12 @@ class IngredientForRecipe(models.Model):
     )
 
     class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['recipe', 'ingredient'],
+                name='unique_recipe_ingredient',
+            )
+        ]
         verbose_name = 'Связь ингредиент-рецепт'
 
     def __str__(self):
@@ -125,15 +132,15 @@ class Favorite(models.Model):
         Recipe,
         related_name='is_favorited',
         on_delete=models.CASCADE)
-    pub_date = models.DateTimeField(auto_now_add=True,
-                                    verbose_name='Дата добавления')
 
     class Meta:
+        ordering = ('-id',)
         verbose_name = 'Избранное'
         verbose_name_plural = 'Избранное'
         constraints = [
             models.UniqueConstraint(
-                fields=['user', 'recipe'], name='unique_favorite',
+                fields=['user', 'recipe'],
+                name='unique_favorite',
             )
         ]
 

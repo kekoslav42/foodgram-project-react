@@ -1,26 +1,28 @@
+from django.db.models import Sum
 from django.http import HttpResponse
 
-from .models import IngredientForRecipe
+from .models import IngredientForRecipe, Recipe, Purchase, Ingredient
 
 
-def get_send_file(recipes_list, filename):
-    ingredients_dict = {}
-    for recipe in recipes_list:
-        ingredients = IngredientForRecipe.objects.filter(recipe=recipe.recipe)
-        for ingredient in ingredients:
-            name = ingredient.ingredient.name
-            if name not in ingredients_dict:
-                ingredients_dict[name] = {
-                    'measurement_unit': ingredient.ingredient.measurement_unit,
-                    'amount': ingredient.amount
-                    }
-            else:
-                ingredients_dict[name]['amount'] += ingredient.amount
-    buy_list = [
-        f'{ingredient} - {ingredients_dict[ingredient]["amount"]} '
-        f'{ingredients_dict[ingredient]["measurement_unit"]} \n'
-        for ingredient in ingredients_dict
-    ]
-    response = HttpResponse(buy_list, 'Content-Type: text/plain')
+def get_send_file(request, filename):
+    """ файл для скачивания P.S костыль"""
+    user = request.user
+    recipes = Purchase.objects.filter(user=user).values('recipe')
+    ingredients_id = Recipe.objects.filter(
+        id__in=recipes
+    ).values('ingredients')
+    ingredients = Ingredient.objects.filter(id__in=ingredients_id)
+
+    to_buy = []
+
+    for ingredient in ingredients:
+        amount = IngredientForRecipe.objects.filter(
+            ingredient=ingredient,
+            recipe__in=recipes,
+        ).aggregate(total_amount=Sum('amount'))["total_amount"]
+        to_buy.append(
+            f'{ingredient.name}: {amount} {ingredient.measurement_unit}.'
+        )
+    response = HttpResponse(to_buy, content_type='text/plain')
     response['Content-Disposition'] = f'attachment; filename="{filename}"'
     return response
