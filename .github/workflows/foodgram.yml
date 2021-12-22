@@ -45,13 +45,13 @@ jobs:
           script: |
             sudo docker pull ${{ secrets.DOCKER_USER }}/foodgram
             sudo docker-compose stop
-            sudo docker-compose rm web
+            sudo docker-compose rm backend
             sudo docker-compose up -d
-            sudo docker-compose exec -T web python manage.py makemigrations --noinput
-            sudo docker-compose exec -T web python manage.py migrate --noinput
-            sudo docker-compose exec -T web python manage.py add_tags
-            sudo docker-compose exec -T web python manage.py add_ingredient
-            sudo docker-compose exec -T web python manage.py collectstatic --no-input
+            sudo docker-compose exec -T backend python manage.py makemigrations --noinput
+            sudo docker-compose exec -T backend python manage.py migrate --noinput
+            sudo docker-compose exec -T backend python manage.py add_tags
+            sudo docker-compose exec -T backend python manage.py add_ingredient
+            sudo docker-compose exec -T backend python manage.py collectstatic --no-input
 
 
 #  send_message:
