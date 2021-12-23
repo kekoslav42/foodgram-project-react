@@ -1,0 +1,2 @@
+login: miks263@mail.ru
+pass: miksmiks
