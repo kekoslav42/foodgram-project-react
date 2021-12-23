@@ -8,7 +8,10 @@ services:
       - ./.env
 
   backend:
-    image: kekoslav/foodgram
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+#    image: kekoslav/foodgram
     restart: always
     volumes:
       - static_value:/backend/static/
@@ -20,7 +23,10 @@ services:
 
 
   frontend:
-    image: kekoslav/foodgram_front
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+#    image: kekoslav/foodgram_front
     volumes:
       - ../frontend/:/app/result_build/
   nginx:

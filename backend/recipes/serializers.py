@@ -181,14 +181,11 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
                     f'{ingredient} указано не допустимое кол-во ингредиентов :'
                     f'{ingredient["amount"]}'
                 )
-        for ingredient in ingredients:
-            ingredient_id = ingredient['id']
-            if ingredient_id in ingredients_list:
+            if ingredient['id'] in ingredients_list:
                 raise serializers.ValidationError(
                     'Ингредиенты не должны повторяться'
                 )
-            ingredients_list.append(ingredient_id)
-
+            ingredients_list.append(ingredient['id'])
         for tag in tags:
             if tag in tags_list:
                 raise serializers.ValidationError(

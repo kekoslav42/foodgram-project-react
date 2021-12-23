@@ -55,8 +55,10 @@ class Ingredient(models.Model):
 class Recipe(models.Model):
     """ Recipe model """
     author = models.ForeignKey(
-        User, on_delete=models.CASCADE,
-        related_name='recipes', verbose_name='Автор'
+        User,
+        on_delete=models.CASCADE,
+        related_name='recipes',
+        verbose_name='Автор'
     )
     name = models.CharField(
         max_length=50, verbose_name='Название'
