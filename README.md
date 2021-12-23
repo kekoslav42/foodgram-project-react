@@ -96,6 +96,7 @@ SSH_KEY # Приватный ssh-ключ
 TG_CHAT_ID # ID телеграм-аккаунта
 TELEGRAM_TOKEN # Токен бота
 ```
+4. В nginx.conf указать server_name(ip or domain)
 
 ### При пуше в master:
 1. Проверка кода на соответствие стандарту PEP8
