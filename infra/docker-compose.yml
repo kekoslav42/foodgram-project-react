@@ -19,6 +19,8 @@ services:
 
   frontend:
     image: kekoslav/foodgram_front
+    depends_on:
+      - backend
     volumes:
       - ../frontend/:/app/result_build/
   nginx:

@@ -14,7 +14,7 @@ User = get_user_model()
 class FollowApiView(APIView):
     permission_classes = (permissions.IsAuthenticated, )
 
-    def post(self, request, pk):
+    def get(self, request, pk):
         """ Получаем подписку """
         serializer = FollowSerializer(
             data={'user': request.user.id, 'following': pk},
