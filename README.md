@@ -106,3 +106,9 @@ TELEGRAM_TOKEN # Токен бота
 3. Пуш на DockerHub.
 3. Деплой на удаленный сервер.
 4. Информирование в телеграмм.
+
+### Автор
+Maksim Rumyantsev - 
+**[GitHub](https://github.com/kekoslav42/)** -
+**[Telegram](https://t.me/Maksim_Rumyantsev)** - 
+**[VK](https://vk.com/maksim_rumyancev)** 
