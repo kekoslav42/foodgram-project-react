@@ -48,6 +48,25 @@ class RecipeViewSet(viewsets.ModelViewSet):
             CreateRecipeSerializer
         )
 
+    @staticmethod
+    def delete_method(request, pk, model):
+        get_object_or_404(
+            model,
+            user=request.user,
+            recipe=get_object_or_404(Recipe, id=pk)
+        ).delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @staticmethod
+    def post_method(request, pk, serializer):
+        data = {'user': request.user.id, 'recipe': pk}
+        serializer = serializer(
+            data=data, context={'request': request}
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
     @action(
         detail=True,
         methods=['POST', ],
@@ -55,23 +74,14 @@ class RecipeViewSet(viewsets.ModelViewSet):
     )
     def favorite(self, request, pk):
         """ Добавление избранных рецептов"""
-        data = {'user': request.user.id, 'recipe': pk}
-        serializer = FavouriteSerializer(
-            data=data, context={'request': request}
+        return self.post_method(
+            request=request, pk=pk, serializer=FavouriteSerializer
         )
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @favorite.mapping.delete
     def delete_favorite(self, request, pk):
         """ Удаление избранных рецептов """
-        get_object_or_404(
-            Favorite,
-            user=request.user,
-            recipe=get_object_or_404(Recipe, id=pk)
-        ).delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return self.delete_method(request=request, pk=pk, model=Favorite)
 
     @action(
         detail=True,
@@ -80,13 +90,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
     )
     def shopping_cart(self, request, pk):
         """ Добавление шоппинг карты"""
-        data = {'user': request.user.id, 'recipe': pk}
-        serializer = PurchaseSerializer(
-            data=data, context={'request': request}
+        return self.post_method(
+            request=request, pk=pk, serializer=PurchaseSerializer
         )
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @shopping_cart.mapping.delete
     def delete_shopping_cart(self, request, pk):
